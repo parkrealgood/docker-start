@@ -1,0 +1,115 @@
+## 도커 컨테이너 다루기
+
+### 도커 엔진의 버전 확인
+```bash
+$ docker -v
+
+Docker version 24.0.7, build afdd53b
+```
+
+### 도커 컨테이너 생성 & 실행 
+- -i 옵션은 컨테이너와 상호 입출력을 가능하게 함
+- -t 옵션으로 tty를 활성화 해서 bash 셸을 사용할 수 있게 함
+- tty : 가상 터미널 또는 콘솔을 의미하며, 사용자 입력(키보드)과 시스템 출력(화면)이 이루어지는 텍스트 기반 인터페이스
+```bash
+$ docker run -i -t ubuntu:14.04
+
+Unable to find image 'ubuntu:14.04' locally
+14.04: Pulling from library/ubuntu
+d1a5a1e51f25: Pull complete 
+75f8eea31a63: Pull complete 
+a72d031efbfb: Pull complete 
+Digest: sha256:64483f3496c1373bfd55348e88694d1c4d0c9b660dee6bfef5e12f43b9933b30
+Status: Downloaded newer image for ubuntu:14.04
+root@667b50bbf4ab:/# 
+```
+
+### 이미지 내려 받기
+```bash
+$ docker pull centos:7
+
+7: Pulling from library/centos
+6717b8ec66cd: Pull complete 
+Digest: sha256:be65f488b7764ad3638f236b7b515b3678369a5124c47b8d32916d6487418ea4
+Status: Downloaded newer image for centos:7
+docker.io/library/centos:7
+```
+
+### 이미지 목록 출력
+```bash
+$ docker images
+REPOSITORY                    TAG       IMAGE ID       CREATED         SIZE
+ubuntu                        14.04     55b7b4f7c5d6   22 months ago   187MB
+centos                        7         c9a1fdca3387   2 years ago     301MB
+```
+
+### 컨테이너 생성
+- 컨테이너를 생성 할 때는 run 명령어가 아닌 create 명령어를 사용할 수도 있음
+- --name 옵션으로 컨테이너 이름을 지정할 수 있음
+```bash
+$ docker create -i -t --name mycentos centos:7
+
+e4e4c50fab20d5eeb4d601ec87d715e7fba3655ae7505cb4591d33e06c29ebd4
+```
+
+### 컨테이너 시작 & 내부로 접속
+- start 명령어로 컨테이너를 시작 
+- attach 명령어로 컨테이너 내부로 접속할 수 있음
+```bash
+$ docker start mycentos
+$ docker attach mycentos
+
+mycentos
+[root@e4e4c50fab20 /]#
+```
+
+### 컨테이너 목록 출력
+- ps 명령어로 현재 실행 중인 컨테이너 목록을 출력할 수 있음
+- -a 옵션으로 종료된 컨테이너도 함께 출력할 수 있음
+```bash
+$ docker ps -a
+
+CONTAINER ID   IMAGE          COMMAND                  CREATED          STATUS                        PORTS                    NAMES
+e4e4c50fab20   centos:7       "/bin/bash"              3 minutes ago    Exited (127) 23 seconds ago                            mycentos
+667b50bbf4ab   ubuntu:14.04   "/bin/bash"              10 minutes ago   Exited (0) 6 minutes ago                               angry_newton
+```
+
+### 컨테이너 정보 확인
+- inspect 명령어로 컨테이너의 상세 정보를 확인할 수 있음
+```bash
+$ docker inspect mycentos
+```
+
+### 컨테이너 삭제
+- rm 명령어로 컨테이너를 삭제할 수 있음
+- -f 옵션으로 강제로 컨테이너를 삭제할 수 있음
+- prune 명령어로 모든 컨테이너를 삭제할 수 있음
+```bash
+$ docker rm angry_newton
+angry_newton
+
+$ docker rm -f mycentos
+mycentos
+
+$ docker container prune 
+WARNING! This will remove all stopped containers.
+Are you sure you want to continue? [y/N] y
+Total reclaimed space: 0B
+```
+
+### 컨테이너 조회
+- ps 명령어로 현재 실행 중인 컨테이너 목록을 출력할 수 있음
+- -a 옵션으로 종료된 컨테이너도 함께 출력할 수 있음
+- -q 옵션으로 컨테이너 ID만 출력할 수 있음
+```bash
+$ docker ps -a - q
+fe8a00d691bf
+```
+
+### 컨테이너 중지 & 재시작
+- stop 명령어로 컨테이너를 중지할 수 있음
+- restart 명령어로 컨테이너를 재시작할 수 있음
+```bash
+$ docker stop mycentos
+$ docker restart mycentos
+```
